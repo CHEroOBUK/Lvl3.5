@@ -20,15 +20,28 @@ public class Car implements Runnable {
     }
     @Override
     public void run() {
+        int winnerIdentify = 0;
         try {
             System.out.println(this.name + " готовится");
             Thread.sleep(500 + (int)(Math.random() * 800));
             System.out.println(this.name + " готов");
+            MainClass.startMarker.incrementAndGet();
+            Thread.sleep(100);
+            MainClass.cdl.countDown();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            MainClass.cdl.await();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         for (int i = 0; i < race.getStages().size(); i++) {
             race.getStages().get(i).go(this);
+        }
+        winnerIdentify = MainClass.finishMarker.incrementAndGet();
+        if (winnerIdentify == 1){
+            System.out.println("Победил " + this.name);
         }
     }
 }
